@@ -49,4 +49,4 @@ export const saveUserData = async (userId: string, data: FinancialData): Promise
     console.error("Error saving user data:", error);
     throw error;
   }
-  
+};
