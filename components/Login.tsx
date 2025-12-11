@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import { auth } from '../services/firebase';
-import { 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  signInWithPopup, 
-  GoogleAuthProvider,
-  updateProfile
-} from 'firebase/auth';
+import { auth, firebase } from '../services/firebase';
 
 interface LoginProps {
   onLoginSuccess: () => void;
@@ -27,11 +20,13 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
 
     try {
       if (isRegister) {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         // Update display name
-        await updateProfile(userCredential.user, { displayName: username });
+        if (userCredential.user) {
+          await userCredential.user.updateProfile({ displayName: username });
+        }
       } else {
-        await signInWithEmailAndPassword(auth, email, password);
+        await auth.signInWithEmailAndPassword(email, password);
       }
       onLoginSuccess();
     } catch (err: any) {
@@ -44,9 +39,9 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   const handleGoogleLogin = async () => {
     setError('');
     setLoading(true);
-    const provider = new GoogleAuthProvider();
+    const provider = new firebase.auth.GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
+      await auth.signInWithPopup(provider);
       onLoginSuccess();
     } catch (err: any) {
       setError(err.message.replace('Firebase: ', ''));

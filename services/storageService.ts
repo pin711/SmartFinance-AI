@@ -1,5 +1,4 @@
 import { db } from './firebase';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { FinancialData, TransactionType } from '../types';
 
 const COLLECTION_NAME = 'financial_data';
@@ -21,10 +20,10 @@ const DEFAULT_DATA: Omit<FinancialData, 'user'> = {
 // Fetch data for a specific user from Firestore
 export const fetchUserData = async (userId: string): Promise<FinancialData | null> => {
   try {
-    const docRef = doc(db, COLLECTION_NAME, userId);
-    const docSnap = await getDoc(docRef);
+    const docRef = db.collection(COLLECTION_NAME).doc(userId);
+    const docSnap = await docRef.get();
 
-    if (docSnap.exists()) {
+    if (docSnap.exists) {
       return docSnap.data() as FinancialData;
     } else {
       // Create default data for new user
@@ -32,7 +31,7 @@ export const fetchUserData = async (userId: string): Promise<FinancialData | nul
         user: { id: userId, username: 'New User', email: '' },
         ...DEFAULT_DATA
       };
-      await setDoc(docRef, newData);
+      await docRef.set(newData);
       return newData;
     }
   } catch (error) {
@@ -44,10 +43,10 @@ export const fetchUserData = async (userId: string): Promise<FinancialData | nul
 // Save entire state to Firestore
 export const saveUserData = async (userId: string, data: FinancialData): Promise<void> => {
   try {
-    const docRef = doc(db, COLLECTION_NAME, userId);
-    await setDoc(docRef, data, { merge: true });
+    const docRef = db.collection(COLLECTION_NAME).doc(userId);
+    await docRef.set(data, { merge: true });
   } catch (error) {
     console.error("Error saving user data:", error);
     throw error;
   }
-};
+  

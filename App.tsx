@@ -8,7 +8,6 @@ import { Investments } from './components/Investments';
 import { Reports } from './components/Reports';
 import { fetchUserData, saveUserData } from './services/storageService';
 import { auth, isFirebaseConfigured } from './services/firebase';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { FinancialData } from './types';
 
 const App: React.FC = () => {
@@ -25,7 +24,7 @@ const App: React.FC = () => {
     }
 
     // Listen for authentication state changes
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
       setLoading(true);
       if (currentUser) {
         setUser(currentUser);
@@ -58,7 +57,7 @@ const App: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
+      await auth.signOut();
       setCurrentView('dashboard');
     } catch (error) {
       console.error("Error signing out", error);

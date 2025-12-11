@@ -1,6 +1,6 @@
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
 
 // DEFAULT PLACEHOLDER CONFIGURATION
 // You must replace these values with your actual Firebase project configuration
@@ -18,14 +18,18 @@ const firebaseConfig = {
 export const isFirebaseConfigured = !firebaseConfig.apiKey.includes("YOUR_API_KEY");
 
 let app;
-let authInstance;
-let dbInstance;
+let authInstance: firebase.auth.Auth;
+let dbInstance: firebase.firestore.Firestore;
 
 if (isFirebaseConfigured) {
   try {
-    app = initializeApp(firebaseConfig);
-    authInstance = getAuth(app);
-    dbInstance = getFirestore(app);
+    if (!firebase.apps.length) {
+      app = firebase.initializeApp(firebaseConfig);
+    } else {
+      app = firebase.apps[0];
+    }
+    authInstance = firebase.auth();
+    dbInstance = firebase.firestore();
   } catch (e) {
     console.error("Firebase initialization failed:", e);
   }
@@ -33,3 +37,4 @@ if (isFirebaseConfigured) {
 
 export const auth = authInstance!;
 export const db = dbInstance!;
+export { firebase };

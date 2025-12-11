@@ -1,4 +1,4 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 import { StockHolding, Transaction, Account } from "../types";
 
 const getAI = () => new GoogleGenAI({ apiKey: process.env.API_KEY });
@@ -7,25 +7,21 @@ export const fetchStockPrice = async (symbol: string): Promise<{ price: number; 
   try {
     const ai = getAI();
     // Using gemini-2.5-flash which supports googleSearch
+    // Note: responseSchema and responseMimeType are not supported with googleSearch tool
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
-      contents: `Find the latest real-time stock price for ${symbol}. Return ONLY the numeric price and currency.`,
+      contents: `Find the latest real-time stock price for ${symbol}. Return ONLY a valid JSON object with keys "price" (number) and "currency" (string). Do not use markdown code blocks.`,
       config: {
         tools: [{ googleSearch: {} }],
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            price: { type: Type.NUMBER },
-            currency: { type: Type.STRING }
-          },
-          required: ["price", "currency"]
-        }
       }
     });
 
-    const text = response.text;
+    let text = response.text;
     if (!text) return null;
+    
+    // Clean up any potential markdown formatting
+    text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+    
     return JSON.parse(text);
   } catch (error) {
     console.error("Error fetching stock data:", error);
