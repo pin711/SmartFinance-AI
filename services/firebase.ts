@@ -6,12 +6,12 @@ import { getFirestore } from "firebase/firestore";
 // You must replace these values with your actual Firebase project configuration
 // Get these from: Firebase Console -> Project Settings -> General -> Your apps
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY_HERE",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyAcptEBJJmCriuLJ99x-IvDFene5LtxrEA",
+  authDomain: "abby-47176.firebaseapp.com",
+  projectId: "abby-47176",
+  storageBucket: "abby-47176.firebasestorage.app",
+  messagingSenderId: "411521544714",
+  appId: "1:411521544714:web:ba19a8a39c5de44f33e5f3"
 };
 
 // Check if the user has updated the config
